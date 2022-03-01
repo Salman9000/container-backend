@@ -196,6 +196,7 @@ const addAsset = async (req, res) => {
 const repeatFunction = async (id, data, token, intervalTimer) => {
   if (!simulateByIdFlag){
     clearInterval(intervalTimer)
+    return res.sendStatus(200);
    } 
   const config = {
     headers: { Authorization: token }
@@ -249,6 +250,7 @@ const simulateById = async (req, res) => {
   const data = res2.data[res2.data.length-1]
   setTimeout(() => {
     simulateByIdFlag = false
+    return res.sendStatus(200);
   }, 1000*60) //stop after 1 min;
   simulateByIdFlag = true
 
