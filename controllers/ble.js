@@ -240,6 +240,10 @@ const repeatFunction = async (id, data, token, intervalTimer) => {
 
 const simulateById = async (req, res) => {
   const id = req.params.id
+  res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type'); // If needed
+    res.setHeader('Access-Control-Allow-Credentials', true); // If needed
   const token = req.header('authorization')
   const res2 = await axios.get(`https://at-backend1.herokuapp.com/sensor/get/data/${id}`, {headers: { Authorization: token }});
   const data = res2.data[res2.data.length-1]
