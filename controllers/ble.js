@@ -243,6 +243,9 @@ const simulateById = async (req, res) => {
   const token = req.header('authorization')
   const res2 = await axios.get(`https://at-backend1.herokuapp.com/sensor/get/data/${id}`, {headers: { Authorization: token }});
   const data = res2.data[res2.data.length-1]
+  setTimeout(() => {
+    simulateByIdFlag = false
+  }, 1000*60) //stop after 1 min;
   simulateByIdFlag = true
 
     console.log(simulateByIdFlag)
