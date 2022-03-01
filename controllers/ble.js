@@ -198,7 +198,7 @@ const repeatFunction = async (id, data, token, intervalTimer) => {
     clearInterval(intervalTimer)
    } 
   const config = {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: token }
 };
 
   try {
@@ -240,8 +240,19 @@ const repeatFunction = async (id, data, token, intervalTimer) => {
 
 const simulateById = async (req, res) => {
   const id = req.params.id
-  const {data, token} = req.body
-  console.log(data)
+  const token = req.header('authorization')
+  const data = {
+    intervalTime: 5000,
+    measuredPower: -59,
+    anglePitchMax: 90,
+    anglePitchMin: -90,
+    angleRollMax: 180,
+    angleRollMin: -180,
+    movementCountMax: 3000,
+    movementCountMin: 0,
+    batteryCountMax: 3000,
+    batteryCountMin: 2000,
+  }
   simulateByIdFlag = true
 
     console.log(simulateByIdFlag)
