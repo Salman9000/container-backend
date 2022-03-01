@@ -241,18 +241,8 @@ const repeatFunction = async (id, data, token, intervalTimer) => {
 const simulateById = async (req, res) => {
   const id = req.params.id
   const token = req.header('authorization')
-  const data = {
-    intervalTime: 5000,
-    measuredPower: -59,
-    anglePitchMax: 90,
-    anglePitchMin: -90,
-    angleRollMax: 180,
-    angleRollMin: -180,
-    movementCountMax: 3000,
-    movementCountMin: 0,
-    batteryCountMax: 3000,
-    batteryCountMin: 2000,
-  }
+  const res2 = await axios.get(`https://at-backend1.herokuapp.com/sensor/get/data/${id}`, {headers: { Authorization: token }});
+  const data = res2.data[res2.data.length-1]
   simulateByIdFlag = true
 
     console.log(simulateByIdFlag)
