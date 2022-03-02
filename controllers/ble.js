@@ -196,6 +196,7 @@ const addAsset = async (req, res) => {
 const repeatFunction = async (id, data, token, intervalTimer) => {
   if (!simulateByIdFlag){
     clearInterval(intervalTimer)
+    return 
    } 
   const config = {
     headers: { Authorization: token }
@@ -233,8 +234,10 @@ const repeatFunction = async (id, data, token, intervalTimer) => {
       timestamp: new Date().toISOString()
     }, config)
     console.log(res.data);
+    return
   } catch (e) {
     console.log(e);
+    return 
   }
 };
 
