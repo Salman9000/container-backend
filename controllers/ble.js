@@ -196,7 +196,6 @@ const addAsset = async (req, res) => {
 const repeatFunction = async (id, data, token, intervalTimer) => {
   if (!simulateByIdFlag){
     clearInterval(intervalTimer)
-    return res.sendStatus(200);
    } 
   const config = {
     headers: { Authorization: token }
@@ -260,7 +259,7 @@ const simulateById = async (req, res) => {
       console.log("insied loop")
       await repeatFunction(id, data, token, intervalTimer)
     }, data.intervalTime)
-
+    return res.sendStatus(200)
     
 }
 
