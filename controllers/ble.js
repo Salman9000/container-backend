@@ -262,7 +262,7 @@ const simulateById = async (req, res) => {
       }, data.intervalTime)
       return res.sendStatus(200)
   } catch (e) {
-    return res.send(500).send("No data availaible in sense")
+    return res.status(404).json({message: "Data not found", status: 404})
   }
 
     
