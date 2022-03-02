@@ -251,10 +251,7 @@ const simulateById = async (req, res) => {
   try {
     const res2 = await axios.get(`https://at-backend1.herokuapp.com/sensor/get/data/${id}`, {headers: { Authorization: token }});
     const data = res2.data[res2.data.length-1]
-    setTimeout(() => {
-      simulateByIdFlag = false
-      return res.sendStatus(200);
-    }, 1000*60) //stop after 1 min;
+   
     simulateByIdFlag = true
   
       console.log(simulateByIdFlag)
@@ -263,6 +260,10 @@ const simulateById = async (req, res) => {
         console.log("insied loop")
         await repeatFunction(id, data, token, intervalTimer)
       }, data.intervalTime)
+      setTimeout(() => {
+        simulateByIdFlag = false
+        
+      }, 1000*60) //stop after 1 min;
       return res.sendStatus(200)
   } catch (e) {
     return res.status(404).json({message: "Data not found", status: 404})
