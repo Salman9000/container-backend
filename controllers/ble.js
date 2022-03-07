@@ -201,7 +201,7 @@ const repeatFunction = async (id, data, token, intervalTimer) => {
   const config = {
     headers: { Authorization: token }
 };
-  const newDate = new Date()
+  let newDate = new Date()
   newDate = newDate.setHours(newDate.getHours() + 5)
   newDate = newDate.toISOString()
   try {
