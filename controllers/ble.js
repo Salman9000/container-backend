@@ -202,7 +202,7 @@ const repeatFunction = async (id, data, token, intervalTimer) => {
     headers: { Authorization: token }
 };
 let date = new Date();
-date.setHours(date.getHours() + 5);
+date.setHours(date.getHours() - 5);
 
 // now you can get the string
 let isodate = date.toISOString();
