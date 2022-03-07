@@ -201,7 +201,9 @@ const repeatFunction = async (id, data, token, intervalTimer) => {
   const config = {
     headers: { Authorization: token }
 };
-
+  const newDate = new Date()
+  newDate = newDate.setHours(newDate.getHours() + 5)
+  newDate = newDate.toISOString()
   try {
     const res = await axios.patch("https://at-backend1.herokuapp.com/sensor/update/data", {
       sensor: id,
@@ -231,7 +233,7 @@ const repeatFunction = async (id, data, token, intervalTimer) => {
       movementCountMin: data.movementCountMin,
       batteryCountMax: data.batteryCountMax,
       batteryCountMin: data.batteryCountMin,
-      timestamp: new Date().toISOString()
+      timestamp: newDate
     }, config)
     console.log(res.data);
     return
