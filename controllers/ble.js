@@ -1,6 +1,7 @@
 const axios = require("axios");
 
 let simulateByIdFlag = false
+let simulateAllFlag = false
 let defaultData = [];
 
 const getAll = async (req, res) => {
@@ -206,9 +207,104 @@ date.setHours(date.getHours() - 5);
 
 // now you can get the string
 let isodate = date.toISOString();
+let lngMin = 62.342519825122000;
+let lngMax = 62.342519825122999;
+let lng = Math.random()*(lngMax - lngMin) + lngMin
+
+let ltdMin = 25.109895082618000;
+let ltdMax = 25.109895082618999;
+let ltd = Math.random()*(ltdMax - ltdMin) + ltdMin
   try {
     const res = await axios.patch("https://at-backend1.herokuapp.com/sensor/update/data", {
       sensor: id,
+      anglePitch: Math.floor(
+        Math.random() * (data.anglePitchMax - data.anglePitchMin) +
+          data.anglePitchMin
+      ),
+      // anglePitch: lng,
+      angleRoll: Math.floor(
+        Math.random() * (data.angleRollMax - data.angleRollMin) + data.angleRollMin
+      ).toString(),
+      // angleRoll: ltd,
+      movementCount: Math.floor(
+        Math.random() * (data.movementCountMax - data.movementCountMin) +
+          data.movementCountMin
+      ),
+      batteryVoltage: Math.floor(
+        Math.random() * (data.batteryCountMax - data.batteryCountMin) +
+          data.batteryCountMin
+      ),
+      intervalTime: data.intervalTime,
+      range: Math.floor(Math.random() * 3) + 1 + data.range,
+      measuredPower: data.measuredPower,
+      anglePitchMax: data.anglePitchMax,
+      anglePitchMin: data.anglePitchMin,
+      angleRollMax: data.angleRollMax,
+      angleRollMin: data.angleRollMin,
+      movementCountMax: data.movementCountMax,
+      movementCountMin: data.movementCountMin,
+      batteryCountMax: data.batteryCountMax,
+      batteryCountMin: data.batteryCountMin,
+      timestamp: isodate
+    }, config)
+    console.log(res.data);
+    return
+  } catch (e) {
+    console.log(e);
+    return 
+  }
+};
+
+const simulateById = async (req, res) => {
+  const id = req.params.id
+  const token = req.header('authorization')
+  try {
+    const res2 = await axios.get(`https://at-backend1.herokuapp.com/sensor/get/data/${id}`, {headers: { Authorization: token }});
+    const data = res2.data[res2.data.length-1]
+   
+    simulateByIdFlag = true
+  
+      console.log(simulateByIdFlag)
+      const intervalTimer  =  setInterval(async () => {
+        console.log(simulateByIdFlag, "inside setinterval")
+        console.log("insied loop")
+        await repeatFunction(id, data, token, intervalTimer)
+      }, data.intervalTime)
+      setTimeout(() => {
+        simulateByIdFlag = false
+        
+      }, 1000*60) //stop after 1 min;
+      return res.sendStatus(200)
+  } catch (e) {
+    return res.status(404).json({message: "Data not found", status: 404})
+  }
+
+    
+}
+
+const cancelSimulationById = async (req, res) => {
+  console.log("Cancelled Simulation of ID")
+  simulateByIdFlag = false
+  return res.status(200).send("Cancelled Simulation of ID")
+}
+
+const repeatFunctionAll = async (checkedData, token, intervalTimer) => {
+  if (!simulateAllFlag){
+    clearInterval(intervalTimer)
+    return 
+   } 
+  let date = new Date();
+date.setHours(date.getHours() - 5);
+const config = {
+  headers: { Authorization: token }
+};
+// now you can get the string
+let isodate = date.toISOString();
+  checkedData.map(async ble => {
+    const res = await axios.get(`https://at-backend1.herokuapp.com/sensor/get/data/${ble.uid}`, config)
+    const data = res.data[res.data.length-1]
+    const res2 = await axios.patch("https://at-backend1.herokuapp.com/sensor/update/data", {
+      sensor: ble.uid,
       anglePitch: Math.floor(
         Math.random() * (data.anglePitchMax - data.anglePitchMin) +
           data.anglePitchMin
@@ -237,51 +333,36 @@ let isodate = date.toISOString();
       batteryCountMin: data.batteryCountMin,
       timestamp: isodate
     }, config)
-    console.log(res.data);
-    return
-  } catch (e) {
-    console.log(e);
-    return 
-  }
-};
-
-const simulateById = async (req, res) => {
-  const id = req.params.id
-  // res.setHeader('Access-Control-Allow-Origin', '*');
-  //   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
-  //   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type'); // If needed
-  //   res.setHeader('Access-Control-Allow-Credentials', true); // If needed
-  const token = req.header('authorization')
-  try {
-    const res2 = await axios.get(`https://at-backend1.herokuapp.com/sensor/get/data/${id}`, {headers: { Authorization: token }});
-    const data = res2.data[res2.data.length-1]
-   
-    simulateByIdFlag = true
+    console.log(res2.data)
+  })
   
-      console.log(simulateByIdFlag)
+}
+
+const simulateAll = async (req, res) => {
+  const checkedData = req.body
+  // console.log(req.body)
+  const token = req.header('authorization')
+  try {   
+    simulateAllFlag = true
       const intervalTimer  =  setInterval(async () => {
-        console.log(simulateByIdFlag, "inside setinterval")
-        console.log("insied loop")
-        await repeatFunction(id, data, token, intervalTimer)
-      }, data.intervalTime)
+        console.log(simulateByIdFlag, "inside simulateAll Loop")
+        await repeatFunctionAll(checkedData, token, intervalTimer)
+      }, 5000)
       setTimeout(() => {
-        simulateByIdFlag = false
+        simulateAllFlag = false
         
       }, 1000*60) //stop after 1 min;
       return res.sendStatus(200)
   } catch (e) {
     return res.status(404).json({message: "Data not found", status: 404})
   }
-
-    
 }
 
-const cancelSimulationById = async (req, res) => {
-  console.log("here")
-  simulateByIdFlag = false
-  return res.status(200).send("Cancelled")
+const cancelSimulationAll = async (req, res) => {
+  console.log("cancelled all simulation")
+  simulateAllFlag = false
+  return res.status(200).send("cancelled all simulation")
 }
-
 module.exports.getAll = getAll;
 module.exports.get = get;
 module.exports.create = create;
@@ -291,4 +372,7 @@ module.exports.addAsset = addAsset;
 module.exports.removeAll = removeAll;
 module.exports.simulateById = simulateById;
 module.exports.cancelSimulationById = cancelSimulationById;
+module.exports.simulateAll = simulateAll;
+module.exports.cancelSimulationAll = cancelSimulationAll;
+
 
