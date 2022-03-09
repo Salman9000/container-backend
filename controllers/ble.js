@@ -4,6 +4,17 @@ let simulateByIdFlag = false
 let simulateAllFlag = false
 let defaultData = [];
 
+const range = 50;
+const measuredPower = -59
+const anglePitchMax = 90
+const anglePitchMin = -90
+const angleRollMax = 180
+const angleRollMin = -180
+const movementCountMax = 3000
+const movementCountMin = 0
+const batteryCountMax = 3000
+const batteryCountMin = 2000
+
 const getAll = async (req, res) => {
   try {
     console.log(defaultData);
@@ -194,7 +205,7 @@ const addAsset = async (req, res) => {
   console.log(response.data)
 }
 
-const repeatFunction = async (id, data, token, intervalTimer) => {
+const repeatFunction = async (id, token, intervalTimer) => {
   if (!simulateByIdFlag){
     clearInterval(intervalTimer)
     return 
@@ -218,33 +229,33 @@ let ltd = Math.random()*(ltdMax - ltdMin) + ltdMin
     const res = await axios.patch("https://at-backend1.herokuapp.com/sensor/update/data", {
       sensor: id,
       anglePitch: Math.floor(
-        Math.random() * (data.anglePitchMax - data.anglePitchMin) +
-          data.anglePitchMin
+        Math.random() * (anglePitchMax - anglePitchMin) +
+          anglePitchMin
       ),
       // anglePitch: lng,
       angleRoll: Math.floor(
-        Math.random() * (data.angleRollMax - data.angleRollMin) + data.angleRollMin
+        Math.random() * (angleRollMax - angleRollMin) + angleRollMin
       ).toString(),
       // angleRoll: ltd,
       movementCount: Math.floor(
-        Math.random() * (data.movementCountMax - data.movementCountMin) +
-          data.movementCountMin
+        Math.random() * (movementCountMax - movementCountMin) +
+          movementCountMin
       ),
       batteryVoltage: Math.floor(
-        Math.random() * (data.batteryCountMax - data.batteryCountMin) +
-          data.batteryCountMin
+        Math.random() * (batteryCountMax - batteryCountMin) +
+          batteryCountMin
       ),
-      intervalTime: data.intervalTime,
-      range: Math.floor(Math.random() * 3) + 1 + data.range,
-      measuredPower: data.measuredPower,
-      anglePitchMax: data.anglePitchMax,
-      anglePitchMin: data.anglePitchMin,
-      angleRollMax: data.angleRollMax,
-      angleRollMin: data.angleRollMin,
-      movementCountMax: data.movementCountMax,
-      movementCountMin: data.movementCountMin,
-      batteryCountMax: data.batteryCountMax,
-      batteryCountMin: data.batteryCountMin,
+      intervalTime: 5000,
+      range: Math.floor(Math.random() * 3) + 1 + range,
+      measuredPower: measuredPower,
+      anglePitchMax: anglePitchMax,
+      anglePitchMin: anglePitchMin,
+      angleRollMax: angleRollMax,
+      angleRollMin: angleRollMin,
+      movementCountMax: movementCountMax,
+      movementCountMin: movementCountMin,
+      batteryCountMax: batteryCountMax,
+      batteryCountMin: batteryCountMin,
       timestamp: isodate
     }, config)
     console.log(res.data);
@@ -258,18 +269,15 @@ let ltd = Math.random()*(ltdMax - ltdMin) + ltdMin
 const simulateById = async (req, res) => {
   const id = req.params.id
   const token = req.header('authorization')
-  try {
-    const res2 = await axios.get(`https://at-backend1.herokuapp.com/sensor/get/data/${id}`, {headers: { Authorization: token }});
-    const data = res2.data[res2.data.length-1]
-   
+  try {   
     simulateByIdFlag = true
   
       console.log(simulateByIdFlag)
       const intervalTimer  =  setInterval(async () => {
         console.log(simulateByIdFlag, "inside setinterval")
         console.log("insied loop")
-        await repeatFunction(id, data, token, intervalTimer)
-      }, data.intervalTime)
+        await repeatFunction(id, token, intervalTimer)
+      }, 5000)
       setTimeout(() => {
         simulateByIdFlag = false
         
@@ -301,36 +309,34 @@ const config = {
 // now you can get the string
 let isodate = date.toISOString();
   checkedData.map(async ble => {
-    const res = await axios.get(`https://at-backend1.herokuapp.com/sensor/get/data/${ble.uid}`, config)
-    const data = res.data[res.data.length-1]
     const res2 = await axios.patch("https://at-backend1.herokuapp.com/sensor/update/data", {
       sensor: ble.uid,
       anglePitch: Math.floor(
-        Math.random() * (data.anglePitchMax - data.anglePitchMin) +
-          data.anglePitchMin
+        Math.random() * (anglePitchMax - anglePitchMin) +
+          anglePitchMin
       ),
       angleRoll: Math.floor(
-        Math.random() * (data.angleRollMax - data.angleRollMin) + data.angleRollMin
-      ),
+        Math.random() * (angleRollMax - angleRollMin) + angleRollMin
+      ).toString(),
       movementCount: Math.floor(
-        Math.random() * (data.movementCountMax - data.movementCountMin) +
-          data.movementCountMin
+        Math.random() * (movementCountMax - movementCountMin) +
+          movementCountMin
       ),
       batteryVoltage: Math.floor(
-        Math.random() * (data.batteryCountMax - data.batteryCountMin) +
-          data.batteryCountMin
+        Math.random() * (batteryCountMax - batteryCountMin) +
+          batteryCountMin
       ),
-      intervalTime: data.intervalTime,
-      range: data.range,
-      measuredPower: data.measuredPower,
-      anglePitchMax: data.anglePitchMax,
-      anglePitchMin: data.anglePitchMin,
-      angleRollMax: data.angleRollMax,
-      angleRollMin: data.angleRollMin,
-      movementCountMax: data.movementCountMax,
-      movementCountMin: data.movementCountMin,
-      batteryCountMax: data.batteryCountMax,
-      batteryCountMin: data.batteryCountMin,
+      intervalTime: 5000,
+      range: Math.floor(Math.random() * 3) + 1 + range,
+      measuredPower: measuredPower,
+      anglePitchMax: anglePitchMax,
+      anglePitchMin: anglePitchMin,
+      angleRollMax: angleRollMax,
+      angleRollMin: angleRollMin,
+      movementCountMax: movementCountMax,
+      movementCountMin: movementCountMin,
+      batteryCountMax: batteryCountMax,
+      batteryCountMin: batteryCountMin,
       timestamp: isodate
     }, config)
     console.log(res2.data)
